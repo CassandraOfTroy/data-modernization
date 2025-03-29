@@ -206,6 +206,27 @@ class AgentManager:
         Returns:
             Dictionary of analysis results by agent
         """
+        # --- DEBUGGING: Print last few messages to check structure ---
+        if messages:
+            print("\n--- DEBUG: Checking message structure in get_results_for_analysis ---")
+            num_messages_to_print = min(len(messages), 5) # Print up to last 5 messages
+            for i in range(num_messages_to_print):
+                msg_index = -(i + 1)
+                message = messages[msg_index]
+                print(f"Message {msg_index}:")
+                if isinstance(message, dict):
+                    print(f"  Keys: {message.keys()}")
+                    print(f"  -> name: {message.get('name')}")
+                    print(f"  -> sender: {message.get('sender')}")
+                    print(f"  -> role: {message.get('role')}")
+                    content_snippet = str(message.get('content', ''))[:100].replace('\n', ' ') + "..."
+                    print(f"  -> content: {content_snippet}")
+                else:
+                    print(f"  Type: {type(message)}")
+                    print(f"  Value: {str(message)[:100]}...")
+            print("--- END DEBUG ---\n")
+        # --- END DEBUGGING ---
+        
         # Use the provided messages list
         business_analysis = extract_response(messages, "BusinessAnalyst")
         technical_analysis = extract_response(messages, "DomainExpert")
