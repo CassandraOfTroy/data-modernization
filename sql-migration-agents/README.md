@@ -1,41 +1,47 @@
 # SQL Migration Agents
 
-A multi-agent system for migrating SQL Server stored procedures to Microsoft Fabric PySpark with a medallion architecture approach.
+A multi-agent AI system for migrating SQL Server stored procedures to Microsoft Fabric PySpark with medallion architecture, powered by AutoGen.
 
 ## Overview
 
-SQL Migration Agents is a Python-based tool that uses specialized AI agents to automate the migration of SQL Server stored procedures to Microsoft Fabric PySpark code. Each agent represents a specific role in the migration process, collaborating to analyze, translate, review, and test the migrated code.
+SQL Migration Agents is a Python-based tool that uses specialized AI agents working collaboratively to convert complex SQL Server stored procedures into modern PySpark code optimized for Microsoft Fabric. 
+
+The tool handles the entire migration workflow - from analyzing the business purpose and technical implementation of stored procedures to generating production-ready PySpark code with appropriate testing. This approach ensures all aspects of the migration are properly addressed: business requirements, technical implementation, architecture, and quality assurance.
 
 ## Key Capabilities
 
-- Analyze SQL stored procedures for business purpose and technical details
-- Translate SQL Server code to PySpark optimized for Microsoft Fabric
-- Implement medallion architecture (bronze, silver, gold layers)
-- Create comprehensive migration plans and documentation
-- Generate test cases to validate functional equivalence
-- Provide code reviews and optimization recommendations
+Each capability is implemented by one or more specialized agents working together:
+
+- **Business & Technical Analysis**: The Business Analyst and Domain Expert agents analyze SQL code to understand business purpose, data flows, and technical implementation details
+- **PySpark Translation**: The Azure Data Engineer agent converts SQL to optimized PySpark code for Microsoft Fabric
+- **Medallion Architecture Implementation**: Generated code follows bronze (raw), silver (validated), and gold (business-ready) layer architecture
+- **Migration Planning**: The Product Owner agent creates comprehensive migration plans with prioritized tasks
+- **Test Generation**: The Testing Agent creates validation tests to ensure functional equivalence
+- **Code Review**: The Tech Lead agent provides code quality feedback and optimization recommendations
 
 ## Agent Architecture
 
-The system is built around 7 specialized agents:
+The system implements a collaborative multi-agent architecture where each agent handles specific aspects of the migration process:
 
-1. **Business Analyst**: Analyzes business requirements and coordinates with technical experts
-2. **Domain Expert**: SQL Data Engineer with deep domain expertise
-3. **Azure Cloud Expert**: Expert in Azure data services and PySpark
-4. **Product Owner**: Creates and prioritizes project backlog for migration
-5. **Azure Data Engineer**: Translates SQL to PySpark with a focus on medallion architecture
-6. **Tech Lead**: Reviews and improves code quality and architecture
-7. **Testing Agent**: Creates test cases to validate migrated code
+1. **Business Analyst**: Analyzes business requirements, data flows, and metrics calculations
+2. **Domain Expert**: Identifies SQL patterns, constructs, and technical implementation details
+3. **Azure Expert**: Provides guidance on Microsoft Fabric and Azure data services
+4. **Product Owner**: Creates migration plans and prioritizes implementation tasks
+5. **Azure Data Engineer**: Translates SQL to PySpark with medallion architecture
+6. **Tech Lead**: Reviews code for quality, performance, and maintainability
+7. **Testing Agent**: Creates test cases to validate functional equivalence
 
-## Quick Start
+These agents collaborate through structured conversations, with each contributing their expertise to produce a comprehensive migration solution.
+
+## Installation
 
 ### Prerequisites
 
-- Python 3.8 or higher
-- OpenAI API key
+- Python 3.9 or higher
+- OpenAI API key or Azure OpenAI API key
 - SQL Server stored procedures to migrate
 
-### Installation
+### Setup
 
 1. Clone the repository:
 ```bash
@@ -43,93 +49,117 @@ git clone https://github.com/yourusername/sql-migration-agents.git
 cd sql-migration-agents
 ```
 
-2. Install the required dependencies:
+2. Install dependencies and the package:
 ```bash
 pip install -r requirements.txt
+pip install -e .
 ```
 
-3. Set up environment variables by copying `.env.template` to `.env` and filling in your OpenAI API key:
+3. Configure API credentials:
 ```bash
 cp .env.template .env
-# Edit .env file with your OpenAI API key
+# Edit .env file with your OpenAI or Azure OpenAI credentials
 ```
 
-4. Initialize the project structure:
-```bash
-python -m src.utils.project_init
-```
+## Usage
 
-### Usage
+The tool provides several commands for different migration tasks:
 
-#### Analyze a SQL Stored Procedure
+### Analyze a SQL Stored Procedure
 
-```bash
-python -m src.main analyze data/input/sample_procedure.sql --context "This procedure calculates RFM metrics for customers"
-```
-
-#### Migrate a SQL Stored Procedure to PySpark
+Performs a detailed analysis of the stored procedure without generating migration code:
 
 ```bash
-python -m src.main migrate data/input/sample_procedure.sql --output-dir data/output/rfm_procedure
+sql-migrate analyze data/input/customer_rfm.sql --context "Calculates customer RFM segments"
 ```
 
-#### Interact with a Specific Agent
+This will generate:
+- Business purpose analysis
+- Technical implementation details
+- Azure/PySpark migration considerations
+
+### Migrate SQL to PySpark
+
+Performs full migration with medallion architecture implementation:
 
 ```bash
-python -m src.main interact azure_data_engineer "How would you implement a slowly changing dimension type 2 in PySpark?"
+sql-migrate migrate data/input/customer_rfm.sql --output-dir data/output/rfm_procedure
 ```
 
-#### List All Available Agents
+This will generate:
+- Bronze layer implementation (raw data ingestion)
+- Silver layer implementation (data validation/transformation)
+- Gold layer implementation (business metrics)
+- Test cases for validation
+- Migration plan with implementation steps
+
+### Agent Interaction
+
+Interact directly with a specific agent:
 
 ```bash
-python -m src.main list-agents
+sql-migrate interact azure_data_engineer "How would you implement a slowly changing dimension type 2 in PySpark?"
 ```
 
-## Integration with Azure AI Foundry
+### List Available Agents
 
-This project can be integrated with Azure AI Foundry by:
+```bash
+sql-migrate list-agents
+```
 
-1. Packaging the agents as AI Foundry skills
-2. Using AI Foundry for agent orchestration
-3. Leveraging AI Foundry's knowledge bases to store domain expertise
-4. Integrating with Azure AI Studio for prompt management
-5. Connecting to Azure resources via AI Foundry integrations
+## Technical Implementation
 
-## Project Structure
+### AutoGen Framework
+
+This project leverages the [AutoGen](https://github.com/microsoft/autogen) framework to orchestrate agent collaboration:
+
+- **Group Chat**: Agents collaborate in a structured conversation
+- **Specialized Roles**: Each agent has specific expertise and responsibilities
+- **Knowledge Sharing**: Information flows between agents to ensure coherent output
+- **Coordination**: Managed workflow ensures proper sequencing of analysis, planning, implementation, and review
+
+### Project Structure
 
 ```
 sql-migration-agents/
-├── src/
-│   ├── agents/             # Specialized agents
-│   │   ├── business_analyst.py
-│   │   ├── domain_expert.py
-│   │   ├── azure_expert.py
-│   │   ├── product_owner.py
-│   │   ├── azure_data_engineer.py
-│   │   ├── tech_lead.py
-│   │   └── testing_agent.py
-│   ├── core/               # Core functionality
-│   │   ├── base_agent.py
-│   │   └── agent_manager.py
-│   ├── utils/              # Utility functions
-│   │   └── project_init.py
-│   └── main.py             # Main entry point
-├── data/
-│   ├── input/              # Input SQL files
-│   └── output/             # Output PySpark files
-├── tests/                  # Project tests
-├── requirements.txt
-├── .env.template
-└── README.md
+├── src/                           # Source code
+│   ├── agents/                    # Agent system
+│   │   ├── agent_manager.py       # Multi-agent coordination
+│   │   ├── prompts.py             # Agent role definitions
+│   │   ├── tasks.py               # Task templates
+│   │   └── utils.py               # Agent utilities
+│   ├── config/                    # Configuration
+│   │   ├── llm.py                 # LLM configuration
+│   │   └── logging.py             # Logging setup
+│   ├── cli/                       # Command line interface
+│   │   ├── commands.py            # Command implementation
+│   │   └── main.py                # CLI entry point
+│   └── utils/                     # Utilities
+│       └── file_utils.py          # File handling
+├── data/                          # Data directory
+│   ├── input/                     # SQL stored procedures
+│   └── output/                    # Generated PySpark code
+├── tests/                         # Unit tests
+├── setup.py                       # Package configuration
+├── requirements.txt               # Dependencies
+└── .env.template                  # Environment configuration
 ```
 
-## Example Output
+## Output Artifacts
 
-When migrating a SQL stored procedure, the system will produce:
+The migration process generates several artifacts:
 
-1. A complete PySpark implementation with medallion architecture
-2. Analysis of the business purpose and technical details
-3. A comprehensive test plan
-4. Architecture recommendations
-5. User stories for implementation planning
+1. **PySpark Implementation**:
+   - `bronze_layer.py`: Raw data ingestion from source systems
+   - `silver_layer.py`: Data validation, cleaning, and normalization
+   - `gold_layer.py`: Business metrics and analytics-ready views
+
+2. **Analysis Documents**:
+   - `business_analysis.md`: Business purpose and requirements
+   - `technical_analysis.md`: Technical patterns and implementation details
+   - `azure_recommendations.md`: Microsoft Fabric optimization guidelines
+
+3. **Quality Assurance**:
+   - `test_migration.py`: Validation test cases
+   - `migration_plan.md`: Implementation steps and priorities
 

@@ -1,3 +1,1 @@
-"""Tests for SQL Migration Agents"""
-
-# This file is intentionally left empty to make the directory a Python package. 
+"""Tests for the SQL Migration Agents.""" 

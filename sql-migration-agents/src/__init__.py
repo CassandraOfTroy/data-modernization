@@ -1,3 +1,8 @@
-"""SQL Migration Agents package"""
+"""
+SQL Migration Agents provides multi-agent systems for SQL to PySpark migrations.
+"""
 
-__version__ = "0.1.0" 
+from src.cli.main import main
+from src.agents.agent_manager import AgentManager
+
+__all__ = ["main", "AgentManager"] 
