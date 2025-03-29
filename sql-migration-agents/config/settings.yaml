@@ -1,0 +1,48 @@
+# SQL Migration Agents Configuration
+
+# Azure OpenAI settings
+azure_openai:
+  deployment_name: your-deployment-name
+  model: gpt-4
+  temperature: 0.2
+  max_tokens: 4000
+  api_version: 2023-12-01-preview
+
+# Azure Key Vault settings (optional)
+key_vault:
+  enabled: false
+  vault_name: your-keyvault-name
+  use_managed_identity: true  # Set to false to use client credentials
+
+# Azure Application Insights (optional)
+app_insights:
+  enabled: false
+
+# Logging settings
+logging:
+  level: INFO
+  file: logs/sql_migration.log
+
+# Migration settings
+migration:
+  project_name: SQLMigration
+  source_dialect: TSQL
+  target: PySpark
+  implement_medallion: true
+  
+# Agent settings
+agents:
+  business_analyst:
+    enabled: true
+  domain_expert:
+    enabled: true
+  azure_expert:
+    enabled: true
+  product_owner:
+    enabled: true
+  azure_data_engineer:
+    enabled: true
+  tech_lead:
+    enabled: true
+  testing_agent:
+    enabled: true
