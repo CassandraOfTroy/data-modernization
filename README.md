@@ -8,7 +8,7 @@ This repository contains two complementary projects focused on modernizing legac
 
 1. **SQL to Medallion**: A toolkit for migrating SQL Server stored procedures to a medallion architecture (bronze, silver, gold layers) on Azure Databricks.
 
-2. **Data Team Agents**: A multi-agent system for analyzing, transforming, and modernizing SQL code using AI-powered agents.
+2. **SQL Migration Agents**: A multi-agent system for analyzing, transforming, and modernizing SQL code using AI-powered agents.
 
 Both projects leverage Azure OpenAI capabilities to assist with code translation, analysis, and transformation.
 
@@ -25,22 +25,22 @@ data-modernization/
 │   │   ├── silver/             # Silver layer processing
 │   │   ├── gold/               # Gold layer processing
 │   │   ├── llm/                # LLM integration
+│   │   ├── orchestration/      # Pipeline orchestration
 │   │   └── utils/              # Utility functions
-│   ├── tests/                  # Unit and integration tests
-│   └── README.md               # Project documentation
+│   └── requirements.txt        # Project dependencies
 │
-├── data-team-agents/           # Multi-agent system for data modernization
+├── sql-migration-agents/       # Multi-agent system for SQL modernization
 │   ├── data/                   # Example SQL files
-│   ├── infrastructure/         # Azure infrastructure as code (Bicep)
-│   ├── notebooks/              # Example notebooks
-│   ├── prompts/                # LLM prompts for agents
+│   │   ├── input/              # Input SQL files
+│   │   └── output/             # Generated output
 │   ├── src/
 │   │   ├── agents/             # Agent implementations
-│   │   ├── api/                # API implementation
-│   │   ├── models/             # Data models
+│   │   ├── cli/                # Command-line interface
+│   │   ├── config/             # Configuration
 │   │   └── utils/              # Utility functions
 │   ├── tests/                  # Unit and integration tests
-│   └── README.md               # Project documentation
+│   ├── setup.py                # Package setup
+│   └── requirements.txt        # Project dependencies
 │
 └── README.md                   # This file
 ```
@@ -57,33 +57,32 @@ A toolkit designed to streamline the migration of legacy SQL Server stored proce
 - **Comprehensive Logging**: Track transformation processes and data lineage
 - **Modular Design**: Separate modules for extraction, transformation, and loading
 
-### Data Team Agents
+### SQL Migration Agents
 
 A multi-agent system for modernizing SQL stored procedures and migrating them to modern data platforms like Azure Databricks or Azure Synapse Analytics.
 
 - **Multi-Agent Architecture**: Specialized agents working together to handle complex SQL modernization tasks
 - **Azure AI Integration**: Seamless integration with Azure OpenAI services
 - **PySpark Translations**: Convert SQL Server stored procedures to PySpark code for Azure Databricks
-- **Synapse SQL Translations**: Convert SQL Server stored procedures to Azure Synapse SQL
-- **Test Generation**: Automatic generation of test cases and synthetic test data
-- **API-First Design**: RESTful API for easy integration into existing workflows
+- **SQL Analysis**: Analyze and understand complex SQL structures
+- **Test Generation**: Automatic generation of test cases
+- **Command-line Interface**: Easy to use CLI for integration into existing workflows
 
 ## Getting Started
 
 ### Prerequisites
 
 - Python 3.8+
-- Azure Databricks workspace
-- Azure OpenAI API access
-- SQL Server with JDBC connectivity
+- Azure OpenAI API access or OpenAI API access
+- SQL Server with JDBC connectivity (for SQL to Medallion)
 
 ### SQL to Medallion
 
 See the detailed [SQL to Medallion README](./sql-to-medallion/README.md) for setup instructions and usage examples.
 
-### Data Team Agents
+### SQL Migration Agents
 
-See the detailed [Data Team Agents README](./data-team-agents/README.md) for setup instructions and usage examples.
+See the detailed [SQL Migration Agents README](./sql-migration-agents/README.md) for setup instructions and usage examples.
 
 ## Use Cases
 
@@ -94,7 +93,7 @@ See the detailed [Data Team Agents README](./data-team-agents/README.md) for set
 - When working with data engineers who prefer a more hands-on approach
 - For smaller migration projects with clear scope and requirements
 
-### When to use Data Team Agents
+### When to use SQL Migration Agents
 
 - When dealing with large, complex SQL modernization projects
 - When automation is a priority for the migration process
