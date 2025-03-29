@@ -6,6 +6,7 @@ Handles creating, configuring, and coordinating the agents.
 import autogen
 from typing import Dict, List, Optional, Any
 from loguru import logger
+import os # Need os to read env vars here
 
 from src.config.llm import get_llm_config
 from src.agents.prompts import get_agent_system_messages
@@ -98,10 +99,14 @@ class AgentManager:
             self.testing_agent
         ]
         
+        # Read group chat specific config
+        max_iterations = int(os.getenv("MAX_ITERATIONS", "15")) # Example default
+        logger.debug(f"Group Chat Max Iterations: {max_iterations}")
+        
         self.groupchat = autogen.GroupChat(
             agents=self.agents, 
             messages=[],
-            max_round=10
+            max_round=max_iterations # Use the configured value
         )
         
         self.manager = autogen.GroupChatManager(

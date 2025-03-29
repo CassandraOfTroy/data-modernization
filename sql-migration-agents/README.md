@@ -1,6 +1,6 @@
 ## Overview
 
-Repo purpose: Build a multi-agent AI system for migrating SQL Server stored procedures to Microsoft Fabric PySpark with medallion architecture, powered by AutoGen.
+Repo purpose: Build a multi-agent AI system for migrating SQL Server stored procedures to PySpark code intedend for creating medallion architecture, powered by AutoGen.
 
 
 ## Key Capabilities

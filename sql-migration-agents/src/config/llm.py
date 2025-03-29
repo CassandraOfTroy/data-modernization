@@ -7,6 +7,11 @@ import os
 from typing import Dict, List, Any
 from loguru import logger
 
+# Default values
+DEFAULT_TEMPERATURE = 0.2
+DEFAULT_TIMEOUT = 120
+DEFAULT_MAX_TOKENS = 4096 # Example default, adjust as needed
+
 def get_config_list() -> List[Dict[str, Any]]:
     """
     Create configuration list for AutoGen based on environment variables.
@@ -37,7 +42,7 @@ def get_config_list() -> List[Dict[str, Any]]:
             }
         ]
     else:
-        logger.error("No API keys found for OpenAI or Azure OpenAI")
+        logger.error("No API keys found for OpenAI or Azure OpenAI. Please check your .env file.")
         config_list = []
     
     return config_list
@@ -50,9 +55,22 @@ def get_llm_config() -> Dict[str, Any]:
         LLM configuration dictionary for AutoGen
     """
     config_list = get_config_list()
-    
+    if not config_list:
+      # Return an empty config if no API keys found to avoid downstream errors
+      return {}
+
+    # Read configuration with defaults
+    temperature = float(os.getenv("TEMPERATURE", DEFAULT_TEMPERATURE))
+    timeout = int(os.getenv("TIMEOUT_SECONDS", DEFAULT_TIMEOUT))
+    max_tokens = int(os.getenv("MAX_TOKENS", DEFAULT_MAX_TOKENS))
+
+    logger.debug(f"LLM Config: Temperature={temperature}, Timeout={timeout}, Max Tokens={max_tokens}")
+
     return {
         "config_list": config_list,
-        "temperature": float(os.getenv("TEMPERATURE", "0.2")),
-        "timeout": int(os.getenv("TIMEOUT_SECONDS", "120"))
+        "temperature": temperature,
+        "timeout": timeout,
+        "max_tokens": max_tokens,
+        # Note: Other parameters like frequency_penalty, presence_penalty etc.
+        # could also be added here if needed and supported by the model/AutoGen.
     } 

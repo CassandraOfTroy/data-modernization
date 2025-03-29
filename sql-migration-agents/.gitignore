@@ -3,3 +3,4 @@ __pycache__/
 *.pyc
 .env
 logs/
+sql_migration_agents.egg-info/
