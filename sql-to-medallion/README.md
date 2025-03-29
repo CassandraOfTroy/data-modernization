@@ -1,10 +1,10 @@
 # SQL to Medallion
 
-A comprehensive solution for migrating SQL Server stored procedures to a modern medallion architecture on Azure Databricks.
+An LLM solution for migrating SQL Server stored procedures to a modern medallion architecture.
 
 ## Overview
 
-SQL to Medallion is a toolkit designed to streamline the migration of legacy SQL Server stored procedures to a modern data lakehouse architecture using the medallion pattern (bronze, silver, gold) on Azure Databricks. It leverages Azure OpenAI to assist with the translation of complex SQL logic to PySpark code.
+SQL to Medallion is a toolkit designed to streamline the migration of legacy SQL Server stored procedures to a modern data lakehouse architecture using the medallion pattern (bronze, silver, gold). It leverages Azure OpenAI to assist with the translation of  SQL logic (stored procedure) to PySpark code.
 
 The solution addresses common challenges in data modernization projects:
 - Analyzing and understanding complex legacy SQL code
@@ -17,7 +17,7 @@ The solution addresses common challenges in data modernization projects:
 
 - **Automated SQL to PySpark Translation**: Convert SQL Server stored procedures to PySpark code
 - **Medallion Architecture Implementation**: Organize data processing into bronze, silver, and gold layers
-- **Azure OpenAI Integration**: Leverage AI for complex code translation and analysis
+- **Azure OpenAI Integration**: Leverage AI for code translation and analysis
 - **Comprehensive Logging**: Track transformation processes and data lineage
 - **Modular Design**: Separate modules for extraction, transformation, and loading
 - **Error Handling**: Robust error handling and recovery mechanisms
@@ -39,7 +39,7 @@ sql-to-medallion/
 │   ├── llm_config.json         # LLM configuration settings
 │   └── prompts.py              # Prompt templates for LLM
 ├── data/                       # Sample data and schemas
-├── notebooks/                  # Example Databricks notebooks
+├── notebooks/                  # Example notebooks
 ├── src/                        # Source code
 │   ├── bronze/                 # Bronze layer processing
 │   │   └── extract.py          # Data extraction functions
@@ -177,7 +177,7 @@ def get_customer_summary(spark, customer_id):
 ### Prerequisites
 
 - Python 3.8+
-- Azure Databricks workspace
+- Azure workspace
 - Azure Data Lake Storage Gen2
 - Azure OpenAI API access
 - SQL Server with JDBC connectivity
@@ -204,7 +204,7 @@ def get_customer_summary(spark, customer_id):
 4. Set up configuration:
    - Update SQL Server connection details in config files
    - Configure Azure OpenAI API details in `config/llm_config.json`
-   - Adjust Azure Databricks and ADLS paths as needed
+   - Adjust Azure and ADLS paths as needed
 
 ### Deployment
 
