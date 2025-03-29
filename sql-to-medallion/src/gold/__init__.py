@@ -1,0 +1,1 @@
+# Makes 'gold' a Python package 
