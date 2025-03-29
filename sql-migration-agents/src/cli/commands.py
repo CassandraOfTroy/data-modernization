@@ -35,36 +35,55 @@ def analyze_sql(args):
             context=args.context
         )
         
-        # Execute the task
-        agent_manager.execute_task(task_message)
+        # Execute the task and capture the results
+        result_data = agent_manager.execute_task(task_message)
         
-        # Get the results
-        results = agent_manager.get_results_for_analysis()
+        # Extract the conversation messages from the returned data
+        conversation_messages = result_data.get('full_conversation', []) if isinstance(result_data, dict) else []
+        
+        # Get the results by passing the captured messages
+        results = agent_manager.get_results_for_analysis(conversation_messages)
+        
+        # Check if results were successfully extracted or if the conversation was empty
+        if not conversation_messages:
+             logger.warning("Conversation generated no messages.")
+             print("Warning: The agent conversation generated no messages.")
+             return 0
+
+        if not results:
+             logger.error("Failed to extract analysis results from the conversation.")
+             print("Error: Could not extract analysis results.")
+             return 1
+        
+        # Ensure keys exist before accessing, provide defaults
+        business_analysis = results.get("business_analysis", "")
+        technical_analysis = results.get("technical_analysis", "")
+        azure_recommendations = results.get("azure_recommendations", "")
         
         # Print summary
         print("\n=== SQL Analysis Summary ===")
         print("\nBusiness Analysis:")
         print("-" * 40)
-        print(results["business_analysis"][:300] + "..." if len(results["business_analysis"]) > 300 else results["business_analysis"])
+        print(business_analysis[:300] + "..." if len(business_analysis) > 300 else business_analysis)
         
         print("\nTechnical Analysis:")
         print("-" * 40)
-        print(results["technical_analysis"][:300] + "..." if len(results["technical_analysis"]) > 300 else results["technical_analysis"])
+        print(technical_analysis[:300] + "..." if len(technical_analysis) > 300 else technical_analysis)
         
         print("\nAzure Recommendations:")
         print("-" * 40)
-        print(results["azure_recommendations"][:300] + "..." if len(results["azure_recommendations"]) > 300 else results["azure_recommendations"])
+        print(azure_recommendations[:300] + "..." if len(azure_recommendations) > 300 else azure_recommendations)
         
         # Save results to files
         output_dir = args.output_dir or "data/output/analysis"
         os.makedirs(output_dir, exist_ok=True)
         
-        write_output_file(os.path.join(output_dir, "business_analysis.md"), results["business_analysis"])
-        write_output_file(os.path.join(output_dir, "technical_analysis.md"), results["technical_analysis"])
-        write_output_file(os.path.join(output_dir, "azure_recommendations.md"), results["azure_recommendations"])
+        write_output_file(os.path.join(output_dir, "business_analysis.md"), business_analysis)
+        write_output_file(os.path.join(output_dir, "technical_analysis.md"), technical_analysis)
+        write_output_file(os.path.join(output_dir, "azure_recommendations.md"), azure_recommendations)
         
-        # Save full conversation for reference
-        write_output_file(os.path.join(output_dir, "full_conversation.json"), results["full_conversation"], is_json=True)
+        # Save full conversation for reference using captured messages
+        write_output_file(os.path.join(output_dir, "full_conversation.json"), conversation_messages, is_json=True)
         
         logger.info(f"Analysis complete. Results saved to {output_dir}")
         print(f"\nFull analysis results saved to {output_dir}")

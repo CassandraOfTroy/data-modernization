@@ -16,9 +16,14 @@ def extract_response(messages: List[Dict[str, Any]], agent_name: str) -> str:
         The most recent message from the agent as a string
     """
     for message in reversed(messages):
-        if message["sender"] == agent_name:
-            return message["content"]
-    return ""
+        # Check both "name" and "sender" keys for the agent identifier
+        # Prioritize "name" if it exists, otherwise use "sender"
+        current_agent_name = message.get("name") or message.get("sender")
+        if current_agent_name == agent_name:
+            # Ensure content exists and is a string
+            content = message.get("content", "")
+            return content if isinstance(content, str) else ""
+    return "" # Return empty string if no message from the agent is found
 
 def extract_code_blocks(text: str) -> List[str]:
     """

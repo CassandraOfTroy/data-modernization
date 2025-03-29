@@ -117,21 +117,29 @@ class AgentManager:
             task_message: The task message to send to the agents
             
         Returns:
-            The raw group chat messages
+            Dictionary containing the full conversation history.
         """
         logger.info("Executing task with agent group")
         
-        # Reset the chat
-        self.groupchat.messages = []
+        # Reset the group chat state before starting
+        self.groupchat.reset()
         
-        # Initiate the chat
+        # Initiate the chat (messages will be stored in self.groupchat.messages)
         self.user_proxy.initiate_chat(
             self.manager,
-            message=task_message
+            message=task_message,
+            clear_history=True, # Recommended to keep True for clean runs
+            silent=False # Keep False to see console logs
         )
         
+        # Immediately get the messages from the groupchat object
+        final_messages = self.groupchat.messages
+        message_count = len(final_messages)
+        logger.info(f"Chat completed. Found {message_count} messages in groupchat object.")
+
+        # Return the messages found directly in the groupchat
         return {
-            "full_conversation": self.groupchat.messages
+            "full_conversation": final_messages
         }
     
     def interact_with_agent(self, agent_name: str, message: str) -> str:
@@ -190,19 +198,50 @@ class AgentManager:
             logger.error(f"Error interacting with agent: {str(e)}")
             raise
     
-    def get_results_for_analysis(self) -> Dict[str, Any]:
+    def get_results_for_analysis(self, messages: List[Dict[str, Any]]) -> Dict[str, Any]:
         """
-        Extract results from the group chat for an analysis task.
+        Extract results from the provided message list for an analysis task.
         Should be called after execute_task() for an analysis task.
         
         Returns:
             Dictionary of analysis results by agent
         """
+        # Use the provided messages list
+        business_analysis = extract_response(messages, "BusinessAnalyst")
+        technical_analysis = extract_response(messages, "DomainExpert")
+        azure_recommendations = extract_response(messages, "AzureExpert")
+        
+        # --- Re-introducing Fallback Logic --- 
+        if not business_analysis:
+            logger.warning("No BusinessAnalyst response found. Trying ProductOwner...")
+            business_analysis = extract_response(messages, "ProductOwner")
+            if not business_analysis:
+                 logger.warning("No BusinessAnalyst or ProductOwner response found.")
+                 # Keep business_analysis as potentially empty string if not found
+
+        if not technical_analysis:
+            logger.warning("No DomainExpert response found. Trying TechLead or AzureDataEngineer...")
+            technical_analysis = extract_response(messages, "TechLead")
+            if not technical_analysis:
+                technical_analysis = extract_response(messages, "AzureDataEngineer")
+            if not technical_analysis:
+                logger.warning("No DomainExpert, TechLead, or AzureDataEngineer response found.")
+                # Keep technical_analysis as potentially empty string
+
+        if not azure_recommendations:
+            logger.warning("No AzureExpert response found. Trying AzureDataEngineer...")
+            azure_recommendations = extract_response(messages, "AzureDataEngineer")
+            if not azure_recommendations:
+                logger.warning("No AzureExpert or AzureDataEngineer response found.")
+                # Keep azure_recommendations as potentially empty string
+        # --- End Fallback Logic --- 
+
+        # Structure the results, ensuring they are always strings
         return {
-            "business_analysis": extract_response(self.groupchat.messages, "BusinessAnalyst"),
-            "technical_analysis": extract_response(self.groupchat.messages, "DomainExpert"),
-            "azure_recommendations": extract_response(self.groupchat.messages, "AzureExpert"),
-            "full_conversation": self.groupchat.messages
+            "business_analysis": business_analysis or "", 
+            "technical_analysis": technical_analysis or "",
+            "azure_recommendations": azure_recommendations or "",
+            # Removed "full_conversation" as it was redundant with the input 'messages'
         }
     
     def get_results_for_migration(self) -> Dict[str, Any]:
