@@ -1,33 +1,21 @@
-# BRONZE LAYER START: Raw Data Ingestion
+# BRONZE LAYER START
 from pyspark.sql import SparkSession
 
-# Load raw data from SQL tables into Delta Lake
-def load_table(table_name):
-    return spark.read.format("jdbc").options(
-        url="jdbc:sqlserver://<server>;database=<db>",
-        dbtable=table_name,
-        user="<username>",
-        password="<password>"
-    ).load()
+# Load raw data into Bronze layer
+customers = spark.read.format("delta").load("fabric://source/customers")
+customer_addresses = spark.read.format("delta").load("fabric://source/customer_addresses")
+customer_interactions = spark.read.format("delta").load("fabric://source/customer_interactions")
+orders = spark.read.format("delta").load("fabric://source/orders")
+order_details = spark.read.format("delta").load("fabric://source/order_details")
+products = spark.read.format("delta").load("fabric://source/products")
+returns = spark.read.format("delta").load("fabric://source/returns")
 
-# Load raw data
-customers = load_table("dbo.Customers")
-customer_addresses = load_table("dbo.CustomerAddresses")
-customer_interactions = load_table("dbo.CustomerInteractions")
-orders = load_table("dbo.Orders")
-order_details = load_table("dbo.OrderDetails")
-products = load_table("dbo.Products")
-returns = load_table("dbo.Returns")
-
-# Save raw data to Bronze Layer
-def save_to_bronze(df, path):
-    df.write.format("delta").mode("overwrite").save(path)
-
-save_to_bronze(customers, "/bronze/customers")
-save_to_bronze(customer_addresses, "/bronze/customer_addresses")
-save_to_bronze(customer_interactions, "/bronze/customer_interactions")
-save_to_bronze(orders, "/bronze/orders")
-save_to_bronze(order_details, "/bronze/order_details")
-save_to_bronze(products, "/bronze/products")
-save_to_bronze(returns, "/bronze/returns")
+# Save raw data to Bronze layer
+customers.write.format("delta").mode("overwrite").save("fabric://bronze/customers")
+customer_addresses.write.format("delta").mode("overwrite").save("fabric://bronze/customer_addresses")
+customer_interactions.write.format("delta").mode("overwrite").save("fabric://bronze/customer_interactions")
+orders.write.format("delta").mode("overwrite").save("fabric://bronze/orders")
+order_details.write.format("delta").mode("overwrite").save("fabric://bronze/order_details")
+products.write.format("delta").mode("overwrite").save("fabric://bronze/products")
+returns.write.format("delta").mode("overwrite").save("fabric://bronze/returns")
 # BRONZE LAYER END
