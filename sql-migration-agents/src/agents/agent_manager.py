@@ -40,7 +40,8 @@ class AgentManager:
             name="User",
             human_input_mode="NEVER",
             system_message="I need help migrating SQL Server stored procedures to PySpark for Microsoft Fabric.",
-            code_execution_config={"use_docker": False},
+            # Disable code execution entirely
+            code_execution_config=None # Disable code execution
         )
         
         # Create specialized agents
@@ -265,30 +266,33 @@ class AgentManager:
             # Removed "full_conversation" as it was redundant with the input 'messages'
         }
     
-    def get_results_for_migration(self) -> Dict[str, Any]:
+    def get_results_for_migration(self, messages: List[Dict[str, Any]]) -> Dict[str, Any]:
         """
-        Extract results from the group chat for a migration task.
+        Extract results from the provided message list for a migration task.
         Should be called after execute_task() for a migration task.
-        
+
+        Args:
+            messages: The list of message dictionaries from the conversation.
+            
         Returns:
             Dictionary of migration artifacts by type
         """
-        # Extract PySpark code from the Azure Data Engineer's response
+        # Extract PySpark code from the Azure Data Engineer's response using the passed messages
         pyspark_code = extract_code_blocks(
-            extract_response(self.groupchat.messages, "AzureDataEngineer")
+            extract_response(messages, "AzureDataEngineer")
         )
         
-        # Extract test cases from the Testing Agent's response
+        # Extract test cases from the Testing Agent's response using the passed messages
         test_cases = extract_code_blocks(
-            extract_response(self.groupchat.messages, "TestingAgent")
+            extract_response(messages, "TestingAgent")
         )
         
-        # Extract migration plan from the Product Owner's response
-        migration_plan = extract_response(self.groupchat.messages, "ProductOwner")
+        # Extract migration plan from the Product Owner's response using the passed messages
+        migration_plan = extract_response(messages, "ProductOwner")
         
         return {
             "pyspark_code": pyspark_code,
             "test_cases": test_cases,
             "migration_plan": migration_plan,
-            "full_conversation": self.groupchat.messages
+            # Removed "full_conversation" as it's redundant with the input messages
         } 

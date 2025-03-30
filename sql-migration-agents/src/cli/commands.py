@@ -120,48 +120,76 @@ def migrate_sql(args):
             context=args.context
         )
         
-        # Execute the task
-        agent_manager.execute_task(task_message)
+        # Execute the task and capture the results
+        result_data = agent_manager.execute_task(task_message)
         
-        # Get the results
-        results = agent_manager.get_results_for_migration()
+        # Extract the conversation messages from the returned data
+        conversation_messages = result_data.get('full_conversation', []) if isinstance(result_data, dict) else []
+        
+        # Get the results by passing the captured messages
+        results = agent_manager.get_results_for_migration(conversation_messages)
+        
+        # Check if results were successfully extracted or if the conversation was empty
+        if not conversation_messages:
+            logger.warning("Conversation generated no messages.")
+            print("Warning: The agent conversation generated no messages.")
+            # Decide how to handle empty conversations
+
+        if not results:
+            logger.error("Failed to extract migration results from the conversation.")
+            print("Error: Could not extract migration results.")
+            return 1
         
         # Create output directory if it doesn't exist
         os.makedirs(output_dir, exist_ok=True)
         
+        # Ensure keys exist in results dictionary, provide defaults
+        pyspark_code = results.get("pyspark_code", [])
+        test_cases = results.get("test_cases", [])
+        migration_plan = results.get("migration_plan", "")
+        
         # Save results to files
         bronze_path = os.path.join(output_dir, "bronze_layer.py")
-        silver_path = os.path.join(output_dir, "silver_layer.py")
+        # Define paths for new stages
+        stage1_path = os.path.join(output_dir, "stage1_base_data.py")
+        stage2_path = os.path.join(output_dir, "stage2_advanced_analytics.py")
+        # Keep existing paths
+        silver_path = os.path.join(output_dir, "silver_layer.py") # Note: Silver might be part of Stage 1/2 now, adjust if needed
         gold_path = os.path.join(output_dir, "gold_layer.py")
         tests_path = os.path.join(output_dir, "test_migration.py")
         plan_path = os.path.join(output_dir, "migration_plan.md")
         
-        # Save layers if they exist in the code blocks
-        pyspark_code = results["pyspark_code"]
+        # Save layers/stages if they exist in the code blocks based on labels
+        # Use more specific labels from the prompt
         for code_block in pyspark_code:
-            if "bronze" in code_block.lower():
+            if "# BRONZE LAYER START" in code_block:
                 write_output_file(bronze_path, code_block)
                 logger.info(f"Saved bronze layer to: {bronze_path}")
-            elif "silver" in code_block.lower():
-                write_output_file(silver_path, code_block)
-                logger.info(f"Saved silver layer to: {silver_path}")
-            elif "gold" in code_block.lower():
-                write_output_file(gold_path, code_block)
-                logger.info(f"Saved gold layer to: {gold_path}")
+            elif "# STAGE 1: BASE DATA START" in code_block:
+                 write_output_file(stage1_path, code_block)
+                 logger.info(f"Saved Stage 1 Base Data to: {stage1_path}")
+            elif "# SILVER LAYER START" in code_block: # Keep for backward compatibility or if agent still uses it
+                 write_output_file(silver_path, code_block)
+                 logger.info(f"Saved silver layer to: {silver_path}")
+            elif "# STAGE 2: ADVANCED ANALYTICS START" in code_block:
+                 write_output_file(stage2_path, code_block)
+                 logger.info(f"Saved Stage 2 Advanced Analytics to: {stage2_path}")
+            elif "# GOLD LAYER START" in code_block:
+                 write_output_file(gold_path, code_block)
+                 logger.info(f"Saved gold layer to: {gold_path}")
         
         # Save tests if they exist
-        test_cases = results["test_cases"]
         if test_cases:
             write_output_file(tests_path, "\n\n".join(test_cases))
             logger.info(f"Saved test cases to: {tests_path}")
         
         # Save migration plan
-        write_output_file(plan_path, results["migration_plan"])
+        write_output_file(plan_path, migration_plan)
         logger.info(f"Saved migration plan to: {plan_path}")
         
-        # Save full conversation for reference
+        # Save full conversation for reference using captured messages
         conversation_path = os.path.join(output_dir, "full_conversation.json")
-        write_output_file(conversation_path, results["full_conversation"], is_json=True)
+        write_output_file(conversation_path, conversation_messages, is_json=True)
         
         print("\n=== SQL Migration Complete ===")
         print(f"PySpark code and migration artifacts saved to: {output_dir}")
@@ -172,8 +200,7 @@ def migrate_sql(args):
         
         print("\nMigration Plan Summary:")
         print("-" * 40)
-        plan = results["migration_plan"]
-        print(plan[:300] + "..." if len(plan) > 300 else plan)
+        print(migration_plan[:300] + "..." if len(migration_plan) > 300 else migration_plan)
         
         logger.info(f"Migration complete. Results saved to {output_dir}")
         

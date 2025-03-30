@@ -49,13 +49,22 @@ git clone https://github.com/yourusername/sql-migration-agents.git
 cd sql-migration-agents
 ```
 
-2. Install dependencies and the package:
+2. Create and activate a virtual environment:
+```bash
+# Create a virtual environment
+python -m venv venv
+
+# Activate the virtual environment on macOS/Linux:
+source venv/bin/activate
+```
+
+3. Install dependencies and the package:
 ```bash
 pip install -r requirements.txt
 pip install -e .
 ```
 
-3. Configure API credentials:
+4. Configure API credentials:
 ```bash
 cp .env.template .env
 # Edit .env file with your OpenAI or Azure OpenAI credentials
@@ -65,28 +74,42 @@ cp .env.template .env
 
 The tool provides several commands for different migration tasks:
 
-### Analyze a SQL Stored Procedure
+### Analyze SQL Procedure
 
 Performs a detailed analysis of the stored procedure without generating migration code:
 
 ```bash
-sql-migrate analyze data/input/customer_rfm.sql --context "Calculates customer RFM segments"
+# Example with context
+sql-migrate analyze data/input/CustomerRFM.sql --context "Calculates customer RFM segments based on purchase history"
+
+# Example specifying output directory
+sql-migrate analyze data/input/AnotherProc.sql --output-dir data/output/another_proc_analysis
+
+# Example with both context and output directory
+sql-migrate analyze data/input/ThirdProc.sql --context "Some context" --output-dir data/output/third_proc_analysis
 ```
 
-This will generate:
+This will generate files like:
 - Business purpose analysis
 - Technical implementation details
 - Azure/PySpark migration considerations
 
 ### Migrate SQL to PySpark
 
-Performs full migration with medallion architecture implementation:
+Performs full migration with the goal of generating Bronze, Silver, and Gold layer code (and potentially intermediate stages):
 
 ```bash
-sql-migrate migrate data/input/customer_rfm.sql --output-dir data/output/rfm_procedure
+# Example specifying output directory
+sql-migrate migrate data/input/CustomerRFM.sql --output-dir data/output/rfm_procedure
+
+# Example with context
+sql-migrate migrate data/input/AnotherProc.sql --context "Important migration notes"
+
+# Example with both context and output directory
+sql-migrate migrate data/input/ThirdProc.sql --context "Context" --output-dir data/output/third_proc_output
 ```
 
-This will generate:
+This will generate files like:
 - Bronze layer implementation (raw data ingestion)
 - Silver layer implementation (data validation/transformation)
 - Gold layer implementation (business metrics)
@@ -138,7 +161,7 @@ sql-migration-agents/
 │       └── file_utils.py          # File handling
 ├── data/                          # Data directory
 │   ├── input/                     # SQL stored procedures
-│   └── output/                    # Generated PySpark code
+│   └── output/                    # Generated analysis files and PySpark code
 ├── tests/                         # Unit tests
 ├── setup.py                       # Package configuration
 ├── requirements.txt               # Dependencies
