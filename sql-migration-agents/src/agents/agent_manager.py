@@ -42,7 +42,7 @@ class AgentManager:
             human_input_mode="NEVER",
             system_message="I need help migrating SQL Server stored procedures to PySpark for Microsoft Fabric.",
             # Disable code execution entirely
-            code_execution_config=None # Disable code execution
+            code_execution_config=False # Disable code execution
         )
         
         # Create specialized agents
