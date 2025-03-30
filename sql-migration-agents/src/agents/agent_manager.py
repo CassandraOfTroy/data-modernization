@@ -130,23 +130,38 @@ class AgentManager:
         # Reset the group chat state before starting
         self.groupchat.reset()
         
-        # Initiate the chat (messages will be stored in self.groupchat.messages)
-        self.user_proxy.initiate_chat(
-            self.manager,
-            message=task_message,
-            clear_history=True, # Recommended to keep True for clean runs
-            silent=False # Keep False to see console logs
-        )
-        
-        # Immediately get the messages from the groupchat object
-        final_messages = self.groupchat.messages
-        message_count = len(final_messages)
-        logger.info(f"Chat completed. Found {message_count} messages in groupchat object.")
+        try:
+            # Initiate the chat (messages will be stored in self.groupchat.messages)
+            self.user_proxy.initiate_chat(
+                self.manager,
+                message=task_message,
+                clear_history=True,  # Recommended to keep True for clean runs
+                silent=False  # Keep False to see console logs
+            )
+            
+            # Immediately get the messages from the groupchat object
+            final_messages = self.groupchat.messages
+            message_count = len(final_messages)
+            logger.info(f"Chat completed. Found {message_count} messages in groupchat object.")
 
-        # Return the messages found directly in the groupchat
-        return {
-            "full_conversation": final_messages
-        }
+            # Return the messages found directly in the groupchat
+            return {
+                "full_conversation": final_messages,
+                "success": True
+            }
+        except Exception as e:
+            # Log detailed error information
+            logger.error(f"Detailed error during chat initiation: {str(e)}")
+            logger.error(f"Error type: {type(e).__name__}")
+            if hasattr(e, '__cause__') and e.__cause__:
+                logger.error(f"Caused by: {str(e.__cause__)}")
+            
+            # Return an error response
+            return {
+                "full_conversation": [],
+                "error": str(e),
+                "success": False
+            }
     
     def interact_with_agent(self, agent_name: str, message: str) -> str:
         """
