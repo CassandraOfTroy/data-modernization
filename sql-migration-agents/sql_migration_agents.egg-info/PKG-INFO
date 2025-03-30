@@ -1,0 +1,14 @@
+Metadata-Version: 2.4
+Name: sql-migration-agents
+Version: 0.1.0
+Summary: AutoGen-based multi-agent system for SQL to PySpark migrations
+Author: Data Modernization Team
+Requires-Python: >=3.9
+Requires-Dist: pyautogen>=0.2.0
+Requires-Dist: loguru
+Requires-Dist: sqlparse
+Requires-Dist: python-dotenv
+Dynamic: author
+Dynamic: requires-dist
+Dynamic: requires-python
+Dynamic: summary

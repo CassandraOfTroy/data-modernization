@@ -1,12 +1,7 @@
-# SQL Migration Agents
-
-A multi-agent AI system for migrating SQL Server stored procedures to Microsoft Fabric PySpark with medallion architecture, powered by AutoGen.
-
 ## Overview
 
-SQL Migration Agents is a Python-based tool that uses specialized AI agents working collaboratively to convert complex SQL Server stored procedures into modern PySpark code optimized for Microsoft Fabric. 
+Repo purpose: Build a multi-agent AI system for migrating SQL Server stored procedures to PySpark code intedend for creating medallion architecture, powered by AutoGen.
 
-The tool handles the entire migration workflow - from analyzing the business purpose and technical implementation of stored procedures to generating production-ready PySpark code with appropriate testing. This approach ensures all aspects of the migration are properly addressed: business requirements, technical implementation, architecture, and quality assurance.
 
 ## Key Capabilities
 
