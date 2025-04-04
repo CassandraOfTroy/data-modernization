@@ -1,4 +1,5 @@
 ## Overview
+Medium post "Generative AI Supported Data Modernization": https://medium.com/ai-advances/generative-ai-supported-data-modernization-c5310800e784
 
 Repo purpose: Build a multi-agent AI system for migrating SQL Server stored procedures to PySpark code intedend for creating medallion architecture, powered by AutoGen.
 
