@@ -32,10 +32,10 @@ def get_config_list() -> List[Dict[str, Any]]:
         config_list = [
             {
                 "model": deployment_name,
-                "api_key": os.getenv("AZURE_OPENAI_API_KEY"),
-                "api_base": os.getenv("AZURE_OPENAI_ENDPOINT"),
                 "api_type": "azure",
-                "api_version": api_version,
+                "base_url": os.getenv("AZURE_OPENAI_ENDPOINT"),
+                "api_key": os.getenv("AZURE_OPENAI_API_KEY"),
+                "api_version": api_version
             }
         ]
     # Fallback to OpenAI

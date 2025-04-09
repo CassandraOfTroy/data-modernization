@@ -48,13 +48,16 @@ def write_output_file(output_path: str, content: Union[str, Dict[str, Any]], is_
         # Create directory if it doesn't exist
         os.makedirs(os.path.dirname(os.path.abspath(output_path)), exist_ok=True)
         
-        with open(output_path, "w") as f:
+        # Specify UTF-8 encoding to handle special characters
+        with open(output_path, "w", encoding='utf-8') as f:
             if is_json:
-                json.dump(content, f, indent=2)
+                # Ensure ASCII is False for JSON to allow non-ASCII characters
+                json.dump(content, f, indent=2, ensure_ascii=False)
             else:
-                f.write(content)
+                # Ensure content is a string before writing
+                f.write(str(content)) 
         logger.debug(f"Successfully wrote to file: {output_path}")
         return True
-    except IOError as e:
+    except (IOError, TypeError) as e: # Catch TypeError as well for non-string content
         logger.error(f"Error writing to {output_path}: {e}")
         return False 

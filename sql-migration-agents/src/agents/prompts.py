@@ -133,5 +133,7 @@ Your role is to:
 Focus on ensuring the migrated code maintains the same functionality as the original SQL,
 handles errors gracefully, and meets performance requirements. Consider data quality,
 edge cases, and performance in your testing approach.
+
+**IMPORTANT OUTPUT REQUIREMENT:** You MUST output any generated PySpark test code enclosed in standard triple backtick markdown blocks (```python ... ```).
 """
     } 

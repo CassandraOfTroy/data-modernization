@@ -297,22 +297,52 @@ class AgentManager:
         Returns:
             Dictionary of migration artifacts by type
         """
-        # Extract PySpark code from the Azure Data Engineer's response using the passed messages
-        pyspark_code = extract_code_blocks(
-            extract_response(messages, "AzureDataEngineer")
-        )
+        pyspark_code = []
+        test_cases = []
+        migration_plan = ""
+        last_plan = ""
+
+        # Iterate through all messages to find relevant artifacts
+        for message in messages:
+            if not isinstance(message, dict) or "content" not in message:
+                continue
+                
+            sender_name = message.get("name") # AutoGen uses 'name' for the agent who sent it
+            content = message.get("content", "")
+
+            # Accumulate PySpark code blocks, primarily from Data Engineer or Tech Lead
+            if sender_name in ["AzureDataEngineer", "TechLead"]:
+                pyspark_code.extend(extract_code_blocks(content))
+            
+            # Accumulate Test code blocks from Testing Agent
+            if sender_name == "TestingAgent":
+                test_cases.extend(extract_code_blocks(content))
+            
+            # Keep track of the latest migration plan from Product Owner
+            if sender_name == "ProductOwner":
+                last_plan = content # Update with the latest plan found
         
-        # Extract test cases from the Testing Agent's response using the passed messages
-        test_cases = extract_code_blocks(
-            extract_response(messages, "TestingAgent")
-        )
-        
-        # Extract migration plan from the Product Owner's response using the passed messages
-        migration_plan = extract_response(messages, "ProductOwner")
-        
+        # Use the last found migration plan
+        migration_plan = last_plan
+
+        # Deduplicate code blocks while preserving order (important if refinement happens)
+        # Simple deduplication based on exact match
+        unique_pyspark_code = []
+        seen_pyspark = set()
+        for block in pyspark_code:
+            if block not in seen_pyspark:
+                unique_pyspark_code.append(block)
+                seen_pyspark.add(block)
+                
+        unique_test_cases = []
+        seen_tests = set()
+        for block in test_cases:
+            if block not in seen_tests:
+                unique_test_cases.append(block)
+                seen_tests.add(block)
+
         return {
-            "pyspark_code": pyspark_code,
-            "test_cases": test_cases,
+            "pyspark_code": unique_pyspark_code,
+            "test_cases": unique_test_cases,
             "migration_plan": migration_plan,
-            # Removed "full_conversation" as it's redundant with the input messages
         } 
