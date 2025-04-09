@@ -80,7 +80,7 @@ Performs a detailed analysis of the stored procedure without generating migratio
 
 ```bash
 # Example with context
-sql-migrate analyze data/input/CustomerRFM.sql --context "Calculates customer RFM segments based on purchase history"
+sql-migrate analyze data/input/CustomerRFM.sql --context "Calculates customer RFM segments based on purchase history" --output-dir data/output/analysis_new
 
 # Example specifying output directory
 sql-migrate analyze data/input/AnotherProc.sql --output-dir data/output/another_proc_analysis
