@@ -22,7 +22,8 @@ def get_config_list() -> List[Dict[str, Any]]:
             {
                 "model": os.getenv("AZURE_OPENAI_DEPLOYMENT_NAME", "gpt-4"),
                 "api_key": os.getenv("AZURE_OPENAI_API_KEY"),
-                "api_base": os.getenv("AZURE_OPENAI_ENDPOINT"),
+                #"api_base": os.getenv("AZURE_OPENAI_ENDPOINT"),
+                "base_url": os.getenv("AZURE_OPENAI_ENDPOINT"),
                 "api_type": "azure",
                 "api_version": os.getenv("AZURE_OPENAI_API_VERSION", "2023-12-01-preview"),
             }
