@@ -1,0 +1,50 @@
+{
+    "name": "Data Modernization",
+    "build": {
+        "dockerfile": "Dockerfile",
+        "context": ".."
+    },
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "ms-python.python",
+                "ms-azuretools.vscode-docker",
+                "ms-python.vscode-pylance",
+                "ms-toolsai.jupyter",
+                "ms-toolsai.jupyter-renderers",
+                "ms-toolsai.vscode-jupyter-cell-tags",
+                "ms-toolsai.vscode-jupyter-slideshow",
+                "ms-azure-devops.azure-pipelines"
+            ],
+            "settings": {
+                "python.linting.enabled": true,
+                "python.linting.pylintEnabled": true,
+                "python.formatting.provider": "black",
+                "editor.formatOnSave": true,
+                "jupyter.alwaysTrustNotebooks": true,
+                "jupyter.widgetScriptSources": ["jsdelivr.com", "unpkg.com"],
+                "jupyter.enableNativeInteractiveWindow": true,
+                "jupyter.enableCellCodeLens": true,
+                "jupyter.askForKernelRestart": false
+            }
+        }
+    },
+    // Specifies which user the VS Code server and terminal windows will run as
+    // Using a non-root user (appuser) is a security best practice
+    "remoteUser": "appuser",
+    
+    // Mount the user's Azure credentials directory and .env file into the container
+    // This allows the container to use the same Azure authentication and environment variables as the host
+    "mounts": [
+        "source=${localEnv:HOME}${localEnv:USERPROFILE}/.azure,target=/home/appuser/.azure,type=bind,consistency=cached",
+        "source=${localWorkspaceFolder}/.env,target=/workspaces/data-modernization/.env,type=bind,consistency=cached"
+    ],
+    
+    // Define how the local workspace is mounted into the container
+    // This is the recommended approach for dev containers
+    "workspaceMount": "source=${localWorkspaceFolder},target=/workspaces/data-modernization,type=bind,consistency=cached",
+    
+    // Set the default directory where VS Code will open inside the container
+    // This should match the target path in workspaceMount and the WORKDIR in Dockerfile
+    "workspaceFolder": "/workspaces/data-modernization"
+}
