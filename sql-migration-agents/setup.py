@@ -11,7 +11,7 @@ setup(
     author="Data Modernization Team",
     packages=find_packages(),
     install_requires=[
-        "pyautogen>=0.2.0",
+        "ag2>=0.2.0",
         "loguru",
         "sqlparse",
         "python-dotenv",
